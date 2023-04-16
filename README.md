@@ -46,31 +46,31 @@ They are basically the most important nouns that form the story of the document.
 
 After we have preprocessed our text, we apply POS-tagging and identify the nouns in the text. But this won’t be all since we also need to take in account the importance of the word in the document. For finding the importance of the words in the whole document we calculate TF-IDF values of each word from the preprocessed text. Since we need to calculate tf-idf in a single text file or document, here the inverse document frequency of the word is calculated by treating each sentence as a document.
 
-After calculating the tf-idf values of all the words in a document, we calculate the mean of the values. We then take only those words whose tf-idf value is greater than the mean-tfidf. This is justified as this would give those words which almost lies in the center of the Ziph’s distribution of the word ranks and their frequency. This is all we needed since we know that the extremes of the Ziph’s distribution contains words which are unlikely to convey much meaning about the document’s semantics. These words are our [important_words]. Then we find the intersection of the nouns and the important_words. This gives us our concept_words.
-  &emsp;    **Finding nouns:** We use the spaCy python library for finding nouns of the document. In the **find_noun()** function in the **main.ipynb** file, we pass the pre-processed text of a document and this function returns us all the nouns of the document. spaCy internally uses pos_tagging  for every token in the document. The pos_ attribute of every token contains its pos tag.
-   &emsp;    **Important words:** The **find_tfidf()** function takes in the whole pre-processed document and calculates the tf-idf scores for all the words. This function returns us the important_words of the document.
-   &emsp;    **Concept words:** The **find_concept_words()** function takes the nouns and the important words returned from the above mentioned functions and find the intersection between them. The intersection thus contains nouns which are important. These form the concept words of the document.
+After calculating the tf-idf values of all the words in a document, we calculate the mean of the values. We then take only those words whose tf-idf value is greater than the mean-tfidf. This is justified as this would give those words which almost lies in the center of the Ziph’s distribution of the word ranks and their frequency. This is all we needed since we know that the extremes of the Ziph’s distribution contains words which are unlikely to convey much meaning about the document’s semantics. These words are our [important_words]. Then we find the intersection of the nouns and the important_words. This gives us our concept_words.  
+  &emsp;    **Finding nouns:** We use the spaCy python library for finding nouns of the document. In the **find_noun()** function in the **main.ipynb** file, we pass the pre-processed text of a document and this function returns us all the nouns of the document. spaCy internally uses pos_tagging  for every token in the document. The pos_ attribute of every token contains its pos tag.  
+   &emsp;    **Important words:** The **find_tfidf()** function takes in the whole pre-processed document and calculates the tf-idf scores for all the words. This function returns us the important_words of the document.  
+   &emsp;    **Concept words:** The **find_concept_words()** function takes the nouns and the important words returned from the above mentioned functions and find the intersection between them. The intersection thus contains nouns which are important. These form the concept words of the document.  
       
 **Finding Important Concepts** 
 
-A group of concept words that co-occur in a context can form important concepts of the document. From the concept of Distributional Semantics, we know that words that co-occur together in a context, deliver the same meaning. Here we find co-occurrence of the concept-words and form a graph. The graph has vertices as the concept-words and two words have edges if they have co-occurrence count greater than or equal to 3. We consider that if two words co-occur twice then that can be a coincidence or more of a linguistic pattern. The weight of the edges is the co-occurrence count between the the two connecting nodes.We apply Girvan-Newman algorithm to find communities in the graph.
+A group of concept words that co-occur in a context can form important concepts of the document. From the concept of Distributional Semantics, we know that words that co-occur together in a context, deliver the same meaning. Here we find co-occurrence of the concept-words and form a graph. The graph has vertices as the concept-words and two words have edges if they have co-occurrence count greater than or equal to 3. We consider that if two words co-occur twice then that can be a coincidence or more of a linguistic pattern. The weight of the edges is the co-occurrence count between the the two connecting nodes.We apply Girvan-Newman algorithm to find communities in the graph.  
 
-  &emsp;  **Co-occurrence:** From the concept of Distributional Semantics, we know that words that co-occur together in a context, deliver the same meaning. Here we find co-occurrence of the concept-words and form a graph. Our **co-occurrence()** function actually computes co-occurrence of words in a sentence and stores it in a dictionary. Each entry in the dictionary would look like this:
+  &emsp;  **Co-occurrence:** From the concept of Distributional Semantics, we know that words that co-occur together in a context, deliver the same meaning. Here we find co-occurrence of the concept-words and form a graph. Our **co-occurrence()** function actually computes co-occurrence of words in a sentence and stores it in a dictionary. Each entry in the dictionary would look like this:  
 {‘section’: { {‘act’ : 2} , {‘form’ : 5}, {‘article’: 15}} }
 So in the above example the word ‘section’ co-occurs with ‘act’ in 2 sentences, with ‘form’ in 5 sentences and with ‘article’ in 15 sentences.
-When we form a graph with the concept_words, we use the co-occurrence number 15 as the edge weight between the words ‘section’ and ‘article’.
+When we form a graph with the concept_words, we use the co-occurrence number 15 as the edge weight between the words ‘section’ and ‘article’.  
 
- &emsp;   **Forming the graph:** We form a graph with nodes as the concept words that we had derived earlier. With the help of the co-occurrence dictionary we form edges only if the co-occurrence number is greater than or equal to 3. This is a hyper-parameter in our model. If we decrease this the number, our graph becomes dense and if we increase the number, it becomes sparse. But this would actually determine how good our communities are. We can tweak this to check with what number we get good communities. We form the graph using the python package **networkX.**
+ &emsp;   **Forming the graph:** We form a graph with nodes as the concept words that we had derived earlier. With the help of the co-occurrence dictionary we form edges only if the co-occurrence number is greater than or equal to 3. This is a hyper-parameter in our model. If we decrease this the number, our graph becomes dense and if we increase the number, it becomes sparse. But this would actually determine how good our communities are. We can tweak this to check with what number we get good communities. We form the graph using the python package **networkX.**  
  
- &emsp; **Community Finding:** We use the Girvan-Newman algorithm to find the communities in the graph.
+ &emsp; **Community Finding:** We use the Girvan-Newman algorithm to find the communities in the graph.  
  
  **Girvan-Newman algorithm:**
  
- The Girvan-Newman community detection algorithm is a method for detecting communities or clusters in a network or graph. The algorithm works by iteratively removing edges from the graph, with the goal of identifying communities as groups of nodes that are more tightly connected to each other than to the rest of the network.Specifically, the algorithm starts by calculating the betweenness centrality of all edges in the network, which is a measure of how often an edge lies on the shortest path between pairs of nodes. It then removes the edge with the highest betweenness centrality, and recalculates the betweenness centrality of the remaining edges. This process is repeated until all edges have been removed.
+ The Girvan-Newman community detection algorithm is a method for detecting communities or clusters in a network or graph. The algorithm works by iteratively removing edges from the graph, with the goal of identifying communities as groups of nodes that are more tightly connected to each other than to the rest of the network.Specifically, the algorithm starts by calculating the betweenness centrality of all edges in the network, which is a measure of how often an edge lies on the shortest path between pairs of nodes. It then removes the edge with the highest betweenness centrality, and recalculates the betweenness centrality of the remaining edges. This process is repeated until all edges have been removed.  
  
- As edges are removed, the network is divided into smaller and smaller components. These components represent communities or clusters of nodes that are more strongly connected to each other than to the rest of the network. The algorithm can be run multiple times, with different starting points, to identify different communities in the network.
+ As edges are removed, the network is divided into smaller and smaller components. These components represent communities or clusters of nodes that are more strongly connected to each other than to the rest of the network. The algorithm can be run multiple times, with different starting points, to identify different communities in the network.  
  
- The algorithm will return us with all the communities that are formed. This means that isolated nodes will also be returned as a community if any. For this we apply another hyper-parameter to get good communities. For this implementation we only consider the communities which have more than 3 words in them.
+ The algorithm will return us with all the communities that are formed. This means that isolated nodes will also be returned as a community if any. For this we apply another hyper-parameter to get good communities. For this implementation we only consider the communities which have more than 3 words in them.  
  
  **NOTE: In the paper they have implemented Louvian Modularity. I have chosen Girvan-Newman as it gave me better results in many documents.**
  
@@ -81,75 +81,75 @@ When we form a graph with the concept_words, we use the co-occurrence number 15 
  
  ## Cosine-Similarity
  
- We vectorize each of the concepts from the document. We just do a linear addition of the vectors of all the words in a concept and multiply it by (1/n). ‘n’ being the number of words in the concept. So ultimately we get as many vectors as the number of concepts in a particular document.
+ We vectorize each of the concepts from the document. We just do a linear addition of the vectors of all the words in a concept and multiply it by (1/n). ‘n’ being the number of words in the concept. So ultimately we get as many vectors as the number of concepts in a particular document.  
 
-Now, for different documents we would have different numbers of concepts per document. Let’s say that we have Doc1 with ‘m’ concepts and Doc2 with ‘n’ concepts, we will be calculating cosine similarity between all the m and n pairs. So we will be calculating mxn similarities in total which we can get in a mxn matrix form.
+Now, for different documents we would have different numbers of concepts per document. Let’s say that we have Doc1 with ‘m’ concepts and Doc2 with ‘n’ concepts, we will be calculating cosine similarity between all the m and n pairs. So we will be calculating mxn similarities in total which we can get in a mxn matrix form.  
 
 
 ## Testing our model: 
 
-Since none of our documents in the data set are labeled, it is hard to make any Accuracy metric for the model. What we do is, we identify 3 documents among which 2 have similar contents and the other one is completely different. If we can show that the known similar documents are having much higher cosine-similarity than similarity of other 2 pairs of document, then we can assert that our model is working as per our expectation.
+Since none of our documents in the data set are labeled, it is hard to make any Accuracy metric for the model. What we do is, we identify 3 documents among which 2 have similar contents and the other one is completely different. If we can show that the known similar documents are having much higher cosine-similarity than similarity of other 2 pairs of document, then we can assert that our model is working as per our expectation.  
       
-   I have identified 3 such documents from our data set.
+   I have identified 3 such documents from our data set.  
 
 Document-1:
 
-Concepts: 
-[1] {'son', 'mother', 'access', 'paternity', 'plaintiff', 'time', 'begotten', 'law', 'marriage'}
+Concepts:  
+[1] {'son', 'mother', 'access', 'paternity', 'plaintiff', 'time', 'begotten', 'law', 'marriage'}  
 
-[2] {'favour', 'wife', 'hindu', 'deed', 'father', 'gift', 'question', 'purposes', 'case', 'husband'}
+[2] {'favour', 'wife', 'hindu', 'deed', 'father', 'gift', 'question', 'purposes', 'case', 'husband'}  
 
-[3] {'property', 'share', 'half', 'daughter', 'gifts', 'properties', 'family'} 
+[3] {'property', 'share', 'half', 'daughter', 'gifts', 'properties', 'family'}  
 
-As we can see from the concepts, this case is about some marriage dispute.
+As we can see from the concepts, this case is about some marriage dispute.  
 
-Document-2:
+Document-2:  
 
-Concepts:
-[1] {'exemption', 'completion', 'tenant', 'question', 'building', 'years', 'period', 'date', 'construction', 'possession'}
+Concepts:  
+[1] {'exemption', 'completion', 'tenant', 'question', 'building', 'years', 'period', 'date', 'construction', 'possession'}  
 
 
-[2] {'rent', 'sub', 'control', 'suit', 'act', 'institution', 'judge', 'section', 'eviction', 'restriction', 'grounds', 'operation'}
+[2] {'rent', 'sub', 'control', 'suit', 'act', 'institution', 'judge', 'section', 'eviction', 'restriction', 'grounds', 'operation'}  
 
-We can guess from the concept words that this case is about some property dispute.
+We can guess from the concept words that this case is about some property dispute.  
 
-Document-3:
+Document-3:  
 
-Concepts:
-[1] {'thereunder', 'accordance', 'particulars', 'section', 'suits', 'date', 'sub', 'rules', 'agra', 'compliance', 'commencement', 'use', 'force', 'amendment', 'furnish', 'proceedings', 'evidence', 'act', 'provisions', 'clause', 'proviso'}
-[2] {'rupees', 'land', 'rate', 'sir', 'rights', 'suit', 'board', 'tenant', 'holder', 'air', 'ejectment', 'acres', 'revenue', 'khudkasht', 'holders', 'provinces'}
+Concepts:  
+[1] {'thereunder', 'accordance', 'particulars', 'section', 'suits', 'date', 'sub', 'rules', 'agra', 'compliance', 'commencement', 'use', 'force', 'amendment', 'furnish', 'proceedings', 'evidence', 'act', 'provisions', 'clause', 'proviso'}  
+[2] {'rupees', 'land', 'rate', 'sir', 'rights', 'suit', 'board', 'tenant', 'holder', 'air', 'ejectment', 'acres', 'revenue', 'khudkasht', 'holders', 'provinces'}  
 
-This document is about some land and property dispute.
+This document is about some land and property dispute.  
 
 
 **So according to us, our model should show more similarity between Document-2 and Document-3 but low similarity between Document-1 and Document-3.**
 
-**Similarity between 1&3:**
+**Similarity between 1&3:**  
 
-Cosine similarity matrix: 
-[0.03103316765782009, 0.2327694498844979]
-[0.06263595493154799, 0.2305699154604502]
-[-0.0644272020500727, 0.4463187990221134]
+Cosine similarity matrix:  
+[0.03103316765782009, 0.2327694498844979]  
+[0.06263595493154799, 0.2305699154604502]  
+[-0.0644272020500727, 0.4463187990221134]  
 
 
-We can see that the similarity values between all the concepts is very low. The lowest being 0.003 and the highest being 0.44. This says that the 2 documents are very different from each other which we were expecting.
+We can see that the similarity values between all the concepts is very low. The lowest being 0.003 and the highest being 0.44. This says that the 2 documents are very different from each other which we were expecting.  
 
-**Similarity between 2&3:**
+**Similarity between 2&3:**  
 
-Cosine similarity matrix: 
-[0.2978163501814514, 0.4977068164842984]
-[0.69065580204434,  0.4681673320618851]
+Cosine similarity matrix:  
+[0.2978163501814514, 0.4977068164842984]  
+[0.69065580204434,  0.4681673320618851]  
 
-As we can see that the similarity values are far more between these 2 documents. The lowest being 0.29 and highest being 0.69. This was what we were expecting as both the documents have more or less the same concept of property dispute.
+As we can see that the similarity values are far more between these 2 documents. The lowest being 0.29 and highest being 0.69. This was what we were expecting as both the documents have more or less the same concept of property dispute.  
 
 **So, finally we can conclude that our model is working as expected**
 
 
 ## Code files:
 
-There are 4 python notebooks.
+There are 4 python notebooks.  
 
-**main.ipynb**: this is the main file where all the fine-tuning steps, vectorizing and similarity is calculated.
-**process.ipynb**: this notebook has the pre-processing steps where I process all the documents in the data set and create a csv file to use it later for fine-tuning and word2vec.
-**finetune.ipynb**: this notebook contains demo fine-tuning of one of the documents which contains output of each step.
-**word2Vec.ipynb**: this document implements word2vec for the words in the corpus and creates a csv file to be used during vectorizing. 
+**main.ipynb**: this is the main file where all the fine-tuning steps, vectorizing and similarity is calculated.  
+**process.ipynb**: this notebook has the pre-processing steps where I process all the documents in the data set and create a csv file to use it later for fine-tuning and word2vec.  
+**finetune.ipynb**: this notebook contains demo fine-tuning of one of the documents which contains output of each step.  
+**word2Vec.ipynb**: this document implements word2vec for the words in the corpus and creates a csv file to be used during vectorizing.  
