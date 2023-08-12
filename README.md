@@ -132,7 +132,7 @@ Cosine similarity matrix:
 [-0.0644272020500727, 0.4463187990221134]  
 
 
-We can see that the similarity values between all the concepts is very low. The lowest being 0.003 and the highest being 0.44. This says that the 2 documents are very different from each other which we were expecting.  
+We can see that the similarity values between all the concepts is very low. The lowest being -0.06 and the highest being 0.44. This says that the 2 documents are very different from each other which we were expecting.  
 
 **Similarity between 2&3:**  
 
